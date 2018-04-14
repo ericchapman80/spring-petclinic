@@ -1,5 +1,4 @@
 # Spring PetClinic Sample Application
-# ECHAPMAN80 - Added Comment
 
 
 ## Understanding the Spring Petclinic application with a few diagrams
