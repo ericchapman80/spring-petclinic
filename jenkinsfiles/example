@@ -59,7 +59,7 @@ pipeline {
         sh "docker run -d -p 9966:9966 --name petclinic-tomcat-temp ${env.IMAGE}:${TAG}"
       }
     }
-    stage('DEV Tests') {
+    stage('DEV Functional Tests') {
         parallel {
     		stage('Smoke-Test Dev') {
       			agent any
@@ -69,17 +69,6 @@ pipeline {
         				//echo "Should be accessible at https://dev.petclinic.liatr.io/petclinic"
 					sh 'sleep 10'
       				}			
-    		}
-    		stage('Dev Performance Test') {
-      			agent any
-      				steps {
-        				//Run baseline jMeter or Blazemeter test
-        				// def kpiMetrics = waitForKeyPerformanceIndicators() 
-					//if (kpiMetrics.status != 'OK') {
-      						//error "Pipeline aborted due to performance kpi failure: ${kpiMetrics.status}"
-    					//}
-					sh 'sleep 25'
-      				}
     		}
 		stage('Acceptance Tests') {
                         agent any
@@ -91,5 +80,27 @@ pipeline {
                 }
 	}
     }
+    stage('DEV Non-Functional Tests') {
+        parallel {
+                stage('Dev Performance Test') {
+      			agent any
+      				steps {
+        				//Run baseline jMeter or Blazemeter test
+        				// def kpiMetrics = waitForKeyPerformanceIndicators() 
+					//if (kpiMetrics.status != 'OK') {
+      						//error "Pipeline aborted due to performance kpi failure: ${kpiMetrics.status}"
+    					//}
+					sh 'sleep 25'
+      				}
+    		}
+		stage('Accessibility Tests') {
+                        agent any
+                                steps {
+                                        //Trigger Accessibility Test Gherkin axe gem
+                                        sh 'sleep 10'
+                                }
+                }
+	}
+    }      
   }
 }
