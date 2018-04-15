@@ -22,7 +22,7 @@ pipeline {
         				//sample dummy step
         				sh 'sleep 4'
       				}
-    		},
+    		}
     		stage('Fortify-Scan') {
       			agent any
       				steps {
