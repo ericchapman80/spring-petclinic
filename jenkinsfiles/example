@@ -38,7 +38,7 @@ pipeline {
     		}
     	}
     }
-    stage('Package') {
+    stage('Build Container') {
       agent any
       steps {
         script {
@@ -52,6 +52,17 @@ pipeline {
         }
       }
     }
+    stage('Push Container to Repo') {
+      agent any
+      steps {
+                sh 'sleep 3'
+                //withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerPassword', usernameVariable: 'dockerUsername')]){
+                        //script {
+                                //sh "docker login -u ${env.dockerUsername} -p ${env.dockerPassword}"
+                                //sh "docker push ${env.IMAGE}:${TAG}"
+                        //}
+      }
+    }
     stage('Deploy to Dev') {
       agent any
       steps {
@@ -59,7 +70,7 @@ pipeline {
         sh "docker run -d -p 9966:9966 --name petclinic-tomcat-temp ${env.IMAGE}:${TAG}"
       }
     }
-    stage('DEV Tests') {
+    stage('DEV Functional Tests') {
         parallel {
     		stage('Smoke-Test Dev') {
       			agent any
@@ -70,7 +81,19 @@ pipeline {
 					sh 'sleep 10'
       				}			
     		}
-    		stage('Dev Performance Test') {
+		stage('ATDD - Acceptance Tests') {
+                        agent any
+                                steps {
+                                        //Trigger Acceptance Test from Epics, Featuers, User Stories
+                                        //Variables can be passed in to the Jenkins job to specifiy scopt of tests
+                                        sh 'sleep 10'
+                                }
+                }
+	}
+    }
+    stage('DEV Non-Functional Tests') {
+        parallel {
+                stage('Dev Performance Test') {
       			agent any
       				steps {
         				//Run baseline jMeter or Blazemeter test
@@ -81,15 +104,61 @@ pipeline {
 					sh 'sleep 25'
       				}
     		}
-		stage('Acceptance Tests') {
+		stage('Accessibility Tests') {
                         agent any
                                 steps {
-                                        //Trigger Acceptance Test from Epics, Featuers, User Stories
-                                        //Variables can be passed in to the Jenkins job to specifiy scopt of tests
+                                        //Trigger Accessibility Test Gherkin axe gem
                                         sh 'sleep 10'
                                 }
                 }
 	}
+    }
+    stage('Deploy to QA') {
+      when {
+        branch 'master'
+      }
+      agent any
+      steps {
+                //deployToEnvironment("ec2-user", "qa.petclinic.liatr.io", "petclinic-deploy-key", env.IMAGE, TAG, "spring-petclinic", "qa.petclinic.liatr.io")
+                sh 'sleep 4'
+      }
+    }
+    
+    stage('Smoke Test QA') {
+      when {
+        branch 'master'
+      }
+      agent any
+      steps {
+                //sh "cd regression-suite && mvn clean -B test -DPETCLINIC_URL=https://qa.petclinic.liatr.io/petclinic"
+                //echo "Should be accessible at https://qa.petclinic.liatr.io/petclinic"
+                sh 'sleep 8'
+      }
+    }
+    stage('E2E Test QA') {
+      when {
+        branch 'master'
+      }
+      agent any
+      steps {
+                //sh "cd regression-suite && mvn clean -B test -DPETCLINIC_URL=https://qa.petclinic.liatr.io/petclinic"
+                //echo "Should be accessible at https://qa.petclinic.liatr.io/petclinic"
+              sh 'sleep 10'  
+              input 'Deploy to PROD?'
+      }
+    }
+    //The remainder of the Jenkinsfile will depend on the Deployment startegy: (Canary/Blue Green vs Rolling)
+    //Readiness checks can be triggered via Jenkins or by the PaaS Provider so I'll assume for this example the PaaS is triggering readiness checks on the pods
+    stage('Deploy to PROD') {
+      when {
+        branch 'master'
+      }
+      agent any
+      steps {
+                //sh "cd regression-suite && mvn clean -B test -DPETCLINIC_URL=https://qa.petclinic.liatr.io/petclinic"
+                //echo "Should be accessible at https://qa.petclinic.liatr.io/petclinic"
+                sh 'sleep 8'
+      }
     }
   }
 }
