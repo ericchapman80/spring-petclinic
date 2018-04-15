@@ -115,7 +115,7 @@ pipeline {
     }
     stage('Deploy to QA') {
       when {
-        branch == "master"
+        branch "master"
       }
       agent any
       steps {
@@ -126,7 +126,7 @@ pipeline {
     
     stage('Smoke Test QA') {
       when {
-        branch 'master'
+        branch "master"
       }
       agent any
       steps {
