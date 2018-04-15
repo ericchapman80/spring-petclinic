@@ -30,7 +30,7 @@ pipeline {
         			sh 'sleep 4'
       			}
     	}
-   }
+   )
     stage('Package') {
       agent any
       steps {
