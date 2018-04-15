@@ -14,23 +14,24 @@ pipeline {
         sh 'mvn clean install'
       }
     }
-    parallel(
-	
-    	stage('Sonar-Scan') {
-      		agent any
-      			steps {
-        			//sample dummy step
-        			sh 'sleep 4'
-      			}
-    	},
-    	stage('Fortify-Scan') {
-      		agent any
-      			steps {
-        			//sample dummy step
-        			sh 'sleep 4'
-      			}
+    stage('Code Scans') {
+    	parallel {
+    		stage('Sonar-Scan') {
+      			agent any
+      				steps {
+        				//sample dummy step
+        				sh 'sleep 4'
+      				}
+    		},
+    		stage('Fortify-Scan') {
+      			agent any
+      				steps {
+        				//sample dummy step
+        				sh 'sleep 4'
+      				}
+    		}
     	}
-   )
+    }
     stage('Package') {
       agent any
       steps {
