@@ -61,7 +61,6 @@ pipeline {
                                 //sh "docker login -u ${env.dockerUsername} -p ${env.dockerPassword}"
                                 //sh "docker push ${env.IMAGE}:${TAG}"
                         //}
-        }
       }
     }
     stage('Deploy to Dev') {
