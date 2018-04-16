@@ -49,6 +49,7 @@ pipeline {
             TAG = env.BRANCH_NAME
           }
           sh "docker build -t ${env.IMAGE}:${TAG} ."
+                
         }
       }
     }
@@ -114,9 +115,9 @@ pipeline {
 	}
     }
     stage('Deploy to QA') {
-      when {
-        branch "master"
-      }
+      //when {
+        //branch "master"
+      //}
       agent any
       steps {
                 //deployToEnvironment("ec2-user", "qa.petclinic.liatr.io", "petclinic-deploy-key", env.IMAGE, TAG, "spring-petclinic", "qa.petclinic.liatr.io")
@@ -125,9 +126,9 @@ pipeline {
     }
     
     stage('Smoke Test QA') {
-      when {
-        branch "master"
-      }
+      //when {
+        //branch "master"
+      //}
       agent any
       steps {
                 //sh "cd regression-suite && mvn clean -B test -DPETCLINIC_URL=https://qa.petclinic.liatr.io/petclinic"
@@ -136,9 +137,9 @@ pipeline {
       }
     }
     stage('E2E Test QA') {
-      when {
-        branch 'master'
-      }
+      //when {
+        //branch 'master'
+      //}
       agent any
       steps {
                 //sh "cd regression-suite && mvn clean -B test -DPETCLINIC_URL=https://qa.petclinic.liatr.io/petclinic"
@@ -150,9 +151,9 @@ pipeline {
     //The remainder of the Jenkinsfile will depend on the Deployment startegy: (Canary/Blue Green vs Rolling)
     //Readiness checks can be triggered via Jenkins or by the PaaS Provider so I'll assume for this example the PaaS is triggering readiness checks on the pods
     stage('Deploy to PROD') {
-      when {
-        branch 'master'
-      }
+      //when {
+        //branch 'master'
+      //}
       agent any
       steps {
                 //sh "cd regression-suite && mvn clean -B test -DPETCLINIC_URL=https://qa.petclinic.liatr.io/petclinic"
